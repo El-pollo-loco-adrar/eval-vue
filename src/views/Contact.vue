@@ -36,7 +36,13 @@
 
         </form>
 
-        <button type="submit" class="btn bg-[#2563EB]/79 w-fit px-6 mx-auto text-white border-2 border-black rounded-4" :class="isFormValid ? 'bg-[#2563EB]/90 border-black text-white hover:bg-[#2563EB]' : 'bg-gray-400 text-gray-200 cursor-not-allowed'" :disabled="!isFormValid">Envoyez</button>
+        <button type="submit" 
+          :disabled="!validation.isValid"
+          :class="validation.isValid 
+            ? 'bg-[#2563EB]/90 border-black text-white hover:bg-[#2563EB]' 
+            : 'bg-gray-400 text-gray-200 cursor-not-allowed'">
+          Envoyer
+        </button>
         </div>
     </div>
 
@@ -62,14 +68,28 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const sujetRegex = /^.{3,}$/; 
 const messageRegex = /^.{5,}$/; 
 
-const isFormValid = computed(() =>{
-  return (
-    nameRegex.test(name.value) &&
-    emailRegex.test(email.value) &&
-    sujetRegex.test(sujet.value) &&
-    messageRegex.test(message.value)
-  );
-});
+const validation = computed(() => {
+  const list = [];
+
+  if (!nameRegex.test(name.value) && name.value.length >0){
+    list.push ('Le nom doit contenir au moins 2 lettres');
+  }
+  if (!emailRegex.test(email.value) && email.value.length >0){
+    list.push ('Veuillez rentrer un mail valide');
+  }
+  if (!sujetRegex.test(sujet.value) && sujet.value.length >0){
+    list.push("Le sujet n'est pas assez long");
+  }
+  if (!messageRegex.test(message.value) && message.value.length >0){
+    list.push("Le message n'est pas assez long");
+  }
+
+  return{
+    error: list,
+    isValid: list.length ===0
+  }
+  
+})
 
 function handleSubmit() {
   alert("Formulaire envoyé");
